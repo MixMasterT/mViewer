@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Explore the Mandlebrot Set</title>
+</head>
+
+<body>
+    <div>
+        <label for=zoomIn>Zoom</label>
+        <input id="range" type=range min=-5 max=10 step=0.01 value=0>  
+        <button id="drawM">Zoom</button>
+        <div id="scale">Zoom factor = 0.0</div>
+        <p id="zoomCenter">Zoom center: r = 0, i = 0</p>
+        <p>Positive zoom factors zoom in, negative values zoom out.<br>Click on the image to recenter the zoom box.</p>
+    </div>
+    
+    <p>The Canvas should be just below this text:</p>
+    <canvas id="c" style="position: absolute; left: 0; top: 200; z-index: 0; border: black 1px dashed" width="500" height="500"></canvas>
+    <canvas id="zoomSelectah" style="position: absolute; left: 0; top: 200;z-index=1;" width="500" height="500"></canvas>
+    
+    <script type="text/jscript" src="zoomSelector.js"></script>
+
+ 
+</body>
+</html>
