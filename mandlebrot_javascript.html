@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Grey-scale your pics</title>
+</head>
+
+<body>
+    <div>
+        <label for=setRange>set range</label>
+        <input type=range min=-100 max=100 value=0 step=0.1>  
+        <button id="drawM">Draw Mandlebrot!</button>
+    </div>
+    
+    <p>The Canvas should be just below this text:</p>
+    <canvas id="c" style="border:black 1px dashed" width="500" height="500"></canvas>
+
+
+
+    <script>
+    
+        var c = document.getElementById("c");
+        var ctx = c.getContext("2d");  
+
+        var imgD = ctx.getImageData(0,0,500,500);
+        
+        function ComplexNumber(real, imaginary) {
+            this.x = real;
+            this.y = imaginary;
+        }
+        
+        ComplexNumber.prototype.add = function(that) {
+            return new ComplexNumber(this.x + that.x , this.y + that.y);    
+        }
+        ComplexNumber.prototype.negative = function() {
+            return new ComplexNumber(-this.x , -this.y);    
+        }
+        ComplexNumber.prototype.multiply = function(that) {
+            return new ComplexNumber(this.x * that.x - this.y * that.y, this.x * that.y + this.y * that.x);    
+        }
+        ComplexNumber.prototype.magnitude = function() {
+            return Math.sqrt(this.x * this.x + this.y * this.y);
+        }
+        ComplexNumber.prototype.toString = function() {
+            return ("{" + this.x + " + " + this.y + "i" + "}");    
+        }
+        
+        var expand_M = function(real,imaginary, max_depth){
+            //This function will return the number of iterations required for magnitude to exceed 
+            var iterations = 0;
+            var C = new ComplexNumber(real, imaginary);
+            var newValue = C.multiply(C);
+            while iterations < max_depth {
+                if newValue.magnitude() > 4 {
+                    return iterations;
+                }               
+                newValue = newValue.multiply(newValue) + C;
+                iterations += 1;                      
+            }
+            return -1;
+        }
+        
+        for (var i = 0; i < imgD.data.length; i +=4) {
+            
+            //get x and y in pixel values first, 
+            var x = (i/4) % imgD.width;
+            var y = ((i/4) - x) / imgD.width;
+            
+            //map x and y to a range in the Complex plane
+            var origin = [-1.5, -1]; //sets the upper left corner of the canvas to a Complex point
+            var range = [2,2]  //defines the range to be displayed (should be proportionate to canvas dimensions...)
+            
+            var real = origin[0] + (x - 1.0) * range[0] / imgD.width;
+            var imaginary = origin[1] + (y - 1.0) * range[1] / imD.height;
+            
+            var val_to_escape = expand_M(real,imaginary);
+            var pixelColor = [0,0,0];
+            if val_to_escape == -1 {
+                //this value is still in the set! So paint it white.
+                pixelColor = [255,255,255];
+            } else {
+                //escaped so keep it black;
+            }
+            
+            imgD.data[i] = pixelColor[0];
+            imgD.data[i+1] = pixelColor[1];
+            imgD.data[i+2] = pixelColor[2];
+            imgD.data[i+3] = 255; //make sure they are all visible...
+        }
+        ctx.putImageData(imgD,0,0);
+  
+
+        function handleFileSelect(evt) {
+            var file = evt.target.files[0];
+            image.src = URL.createObjectURL(evt.target.files[0]);
+      
+            //console.log("Image.src now equals: " + image.src);
+            image.onload = function() {
+                ctx.drawImage(image,0,0,c.width,c.height);  
+            }
+        }
+    
+        document.getElementById('file').addEventListener('change', handleFileSelect, false);
+        document.querySelector('button').addEventListener('click', greyIt, false);
+
+    </script>
+ 
+</body>
+</html>
