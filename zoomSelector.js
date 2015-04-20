@@ -21,17 +21,20 @@ document.getElementById("range").oninput = function() {
 document.getElementById("c").onmousemove = function(e) {
     // update displayed value for r and i:
     var newR = (rX - currentRange/2) + ((e.pageX - c.offsetLeft)/c.width)*currentRange;
-    var newi = (iY - currentRange/2) + ((e.pageY - c.offsetTop)/c.height)*currentRange;
+    var newi = (currentRange/2 -iY) - ((e.pageY - c.offsetTop)/c.height)*currentRange;
     document.getElementById("zoomCenter").innerHTML = "Zoom center: r = " + parseFloat(newR).toFixed(3) + " , i = " + parseFloat(newi).toFixed(3)  ;
     
 }
 
-document.getElementById("c").onclick = function(e) {
-    
+document.getElementById("c").onclick = function(e) {    
     // update the center for the Zoom box.
     pxCenterX = e.pageX - c.offsetLeft;
-    pxCenterY = e.pageY - c.offsetTop;                                             
-                                                
+    pxCenterY = e.pageY - c.offsetTop;
+    
+    
+    //then redraw the box
+    ctx.clearRect(0,0,c.width,c.height);
+    updateZoombox(pxCenterX,pxCenterY);
 }
         
 function updateZoombox(centerX, centerY) {

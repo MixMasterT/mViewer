@@ -15,8 +15,8 @@
     </div>
     
     <p>The maximum view is [[-2,2],[-2i,2i]. Attempts to zoom further out will be futile.</p>
-    <canvas id="c" style="position: absolute; left: 0; top: 200; border: black 1px dashed" width="800" height="800"></canvas>
-    
+    <canvas id="c" style="position: absolute; left: 0; top: 200; border: black 1px dashed; z-index = 0" width="800" height="800"></canvas>
+    <canvas id="mandlebrot" style="position: absolute; left: 0; top: 200; border: black 1px dashed; z-index: -1" width="800" height="800"></canvas>
     <script type="text/jscript" src="zoomSelector.js"></script>
 
  
