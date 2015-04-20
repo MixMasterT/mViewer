@@ -1,6 +1,6 @@
 var c = document.getElementById("c");
 var ctx = c.getContext('2d');
-        
+  
 var MAX_ZOOM_OUT = 4;
 
 var pxCenterX = c.width/2;
@@ -18,18 +18,20 @@ document.getElementById("range").oninput = function() {
     updateZoombox(pxCenterX,pxCenterY);
 }
 
-document.getElementById("c").onclick = function(e) {
+document.getElementById("c").onmousemove = function(e) {
     // update displayed value for r and i:
     var newR = (rX - currentRange/2) + ((e.pageX - c.offsetLeft)/c.width)*currentRange;
     var newi = (iY - currentRange/2) + ((e.pageY - c.offsetTop)/c.height)*currentRange;
     document.getElementById("zoomCenter").innerHTML = "Zoom center: r = " + parseFloat(newR).toFixed(3) + " , i = " + parseFloat(newi).toFixed(3)  ;
     
+}
+
+document.getElementById("c").onclick = function(e) {
+    
     // update the center for the Zoom box.
     pxCenterX = e.pageX - c.offsetLeft;
-    pxCenterY = e.pageY - c.offsetTop;
-    
-    
-    
+    pxCenterY = e.pageY - c.offsetTop;                                             
+                                                
 }
         
 function updateZoombox(centerX, centerY) {
@@ -52,3 +54,6 @@ function updateZoombox(centerX, centerY) {
         ctx.stroke();
         ctx.closePath();
 }
+
+//MAIN FUNCTION --> DRAW MANDLEBROT uses DOM to create additional canvas behind the zoomSelector
+//document.getElementById("
