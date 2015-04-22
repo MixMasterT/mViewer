@@ -35,6 +35,8 @@ document.getElementById("c").onclick = function(e) {
     //then redraw the box
     ctx.clearRect(0,0,c.width,c.height);
     updateZoombox(pxCenterX,pxCenterY);
+    
+    Math.sqrt(this.r*this.r + this.i*this.i);
 }
         
 function updateZoombox(centerX, centerY) {
@@ -47,7 +49,7 @@ function updateZoombox(centerX, centerY) {
     if (newRange > MAX_ZOOM_OUT) { newRange = MAX_ZOOM_OUT;}
             
     var pixRange = Math.floor(c.width * (newRange/currentRange));
-        console.log(pixRange);
+        //console.log(pixRange);
         var pX = centerX - pixRange/2;
         var pY = centerY - pixRange/2;
     
