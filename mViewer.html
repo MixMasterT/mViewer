@@ -2,24 +2,38 @@
 <html>
 <head>
     <title>Explore the Mandlebrot Set</title>
+    <link rel="stylesheet" type="text/css" href="mViewer.css">
 </head>
 
 <body>
-    <div>
-        <label for=zoomIn>Zoom</label>
-        <input id="range" type=range min=-3 max=8 step=0.01 value=0>  
-        <button id="drawM">Zoom</button>
-        <div id="scale">Zoom factor = 0.0</div>
-        <p id="zoomCenter">Zoom center: r = 0, i = 0</p>
-        <p>Positive zoom factors zoom in, negative values zoom out. Click on the image to recenter the zoom box.</p>
+    <div id="topBar">
+        <h2>Use the controls below to zoom in and explore the Mandlebrot Set.</h2>
     </div>
-    
-    <p>The maximum view is [[-2,2],[-2i,2i]. Attempts to zoom further out will be futile.</p>
-    <canvas id="c" style="position: absolute; left: 0; top: 200; border: black 1px dashed; z-index = 0" width="500" height="500"></canvas>
-    <canvas id="mandlebrot" style="position: absolute; left: 0; top: 200; border: black 1px dashed; z-index: -1" width="500" height="500"></canvas>
-    <script type="text/jscript" src="ComplexNumber.js"></script>
-    <script type="text/jscript" src="mandlebrotViewer.js"></script>
 
- 
+    <canvas id="c" style="z-index: 1" width="500" height="500"></canvas>
+    <canvas id="mandlebrot" style="z-index: 0" width="500" height="500"></canvas>
+
+    <footer>
+        <div id="rangeOverview">
+            <p id="indicateRange">Current view is {[-2,2], [-2i,2i]}</p>
+            <button id="resetRange">Zoom all the way out</button>
+            <button id="showGrid">Show Grid</button>
+        </div>
+
+        <div id="zoomControls">
+            <label for=zoomIn>Zoom</label>
+            <input id="range" type=range min=-3 max=8 step=0.01 value=0>
+            <button id="drawM">Zoom</button>
+            <div id="zoomDetails">
+                <p id="scale">Zoom factor = 0.0</p>
+                <p id="pointerCoords">Pointer at: r = 0, i = 0</p>
+                <p >Positive zoom factors zoom in, negative values zoom out.<br>Click on the image to recenter the zoom box.</p>
+            </div>
+        </div>
+    </footer>
+    <script type="text/jscript" src="ComplexNumber.js"></script>
+    <script type="text/jscript" src="mViewer.js"></script>
+
+
 </body>
 </html>
