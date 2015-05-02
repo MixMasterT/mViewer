@@ -54,13 +54,13 @@ c.onmouseout = function(e) {
    document.getElementById("pointerCoords").innerHTML = "Zoom center: r = " + parseFloat(newCenR).toFixed(3) + " , i = " + parseFloat(newCenI).toFixed(3);
 }
 c.onclick = function(e) {
-   newCenR = e.pageX - c.offsetLeft;
-   newCenI = e.pageY - c.offsetTop;
-
+   newCenR = (cenR - currentRange/2) + ((e.pageX - c.offsetLeft)/c.width)*currentRange;
+   newCenI = (cenI + currentRange/2) - ((e.pageY - c.offsetTop)/c.height)*currentRange;
+   //console.log("newCenR = " + newCenR + " and newCenI = " + newCenI);
    upDateZoomBox(newCenR,newCenI);
 }
 
-function upDateZoomBox(XcenR,YcenI) {
+function upDateZoomBox(Rcenter,Icenter) {
    var scalFact = range.value;
 
    var newRange = currentRange * Math.pow(2,-scalFact);
@@ -69,19 +69,16 @@ function upDateZoomBox(XcenR,YcenI) {
 
    var pxRange = Math.floor(c.width * (newRange/currentRange));
 
-   var pX = XcenR - pxRange/2;
-   var pY = YcenI - pxRange/2;
+   var pX = RtranslateX(Rcenter) - pxRange/2;
+   var pY = ItranslateY(Icenter) - pxRange/2;
 
-   ctx.clearRect(0,0,c.width,c.height);
-   if (seeGrid) {
-      drawGrid();
-   }
+   eraseReplace();
 
    ctx.beginPath();
    ctx.rect(pX,pY,pxRange,pxRange);
    ctx.strokeStyle="black";
    ctx.stroke();
-   cts.closePath();
+   ctx.closePath();
 }
 
 function drawGrid() {
@@ -110,16 +107,16 @@ function drawGrid() {
 
    //finally, add the values
    ctx.font="12px times";
-   ctx.strokeText((cenR - currentRange/2),c.width/4-14,12);
-   ctx.strokeText(cenR,c.width/2+8,12);
-   ctx.strokeText((cenR + currentRange/2),3*c.width/4+8,12);
+   ctx.strokeText(parseFloat(cenR - currentRange/2).toFixed(3).toString(), c.width/4-c.width/20, 12);
+   ctx.strokeText(parseFloat(cenR).toFixed(3).toString(),c.width/2+5,12);
+   ctx.strokeText(parseFloat(cenR + currentRange/2).toFixed(3).toString(),3*c.width/4+5,12);
 
-   var upperQuart = (cenI + currentRange/2).toString() + "i";
-   var middle = (cenI).toString() + "i";
-   var LowerQuart = (cenI - currentRange/2).toString() + "i";
-   ctx.strokeText(upperQuart,c.width-12,c.height/4-8);
-   ctx.strokeText(middle,c.width-12,c.height/2-8);
-   ctx.strokeText(LowerQuart,c.width-18,c.height*3/4);
+   var upperQuart = parseFloat(cenI + currentRange/2).toFixed(3).toString() + "i";
+   var middle = parseFloat(cenI).toFixed(3).toString() + "i";
+   var LowerQuart = parseFloat(cenI - currentRange/2).toFixed(3).toString() + "i";
+   ctx.strokeText(upperQuart,c.width-(c.width/14),c.height/4-5);
+   ctx.strokeText(middle,c.width-(c.width/14),c.height/2-5);
+   ctx.strokeText(LowerQuart,c.width-(c.width/12),c.height*3/4-5);
 
 }
 
@@ -127,4 +124,45 @@ var range = document.getElementById("range");
 range.oninput = function() {
    document.getElementById("scale").innerHTML = "Zoom factor = " + document.getElementById("range").value;
    upDateZoomBox(newCenR,newCenI);
+}
+
+//this part will handle zooming, and call the draw_Mandlebrot function
+document.getElementById("drawM").onclick = function() {
+   //first update the currentRange variable, and cenR / cenI
+   currentRange = currentRange * Math.pow(2,-(range.value));
+
+   if (currentRange > MAX_ZOOM_OUT) {currentRange = MAX_ZOOM_OUT;}
+
+   cenR = newCenR;
+   cenI = newCenI;
+
+   //call eraseReplace to get rid of of old grid coords and show new ones
+   eraseReplace();
+
+}
+
+document.getElementById("resetRange").onclick = function() {
+   currentRange = MAX_ZOOM_OUT;
+   cenR = 0;
+   cenI = 0;
+
+   newCenR = 0;
+   newCenI = 0;
+
+   eraseReplace();
+}
+// interal functions
+function eraseReplace() {
+   ctx.clearRect(0,0,c.width,c.height);
+   if (seeGrid) {
+      drawGrid();
+   }
+}
+
+//these functions turn complex components into pixel values
+function RtranslateX(r) {
+   return (r - (cenR - currentRange/2)) * Math.floor(c.width/currentRange);
+}
+function ItranslateY(i) {
+   return (((cenI + currentRange/2) - i) * Math.floor(c.height/currentRange));
 }
