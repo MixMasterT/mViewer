@@ -19,7 +19,7 @@ ComplexNumber.prototype.plus = function(C) {
         return new ComplexNumber((C + this.r), 0);
     }
     // C must be a ComplexNUmber, so proceed....
-    return new ComoplexNumber((this.r + C.r),(this.i + C.i));
+    return new ComplexNumber((this.r + C.r),(this.i + C.i));
 }
 
 ComplexNumber.prototype.squared = function() {

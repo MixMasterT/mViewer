@@ -1,7 +1,7 @@
 // These constants effect perfomance and where the view goes when reset
 // MAX_ZOOM_OUT reflects the total range in r  and i values
 var MAX_ZOOM_OUT = 4; //Set this lower for a closer starting zoom
-var MAX_ITERATIONS = 20; //Set this higher for more complex edges
+var MAX_ITERATIONS = 200; //Set this higher for more complex edges
 
 // These two values represent the origin for the reset view
 var cenR = 0;
@@ -139,6 +139,8 @@ document.getElementById("drawM").onclick = function() {
    //call eraseReplace to get rid of of old grid coords and show new ones
    eraseReplace();
 
+   //call draw_Mandlebrot
+   draw_Mandlebrot();
 }
 
 document.getElementById("resetRange").onclick = function() {
@@ -150,6 +152,91 @@ document.getElementById("resetRange").onclick = function() {
    newCenI = 0;
 
    eraseReplace();
+}
+
+function draw_Mandlebrot() {
+   //first access the canvas, create a context, and image Object
+   var mCanvas = document.getElementById("mandlebrot");
+   var mCtx = mCanvas.getContext("2d");
+   var mImageData = mCtx.getImageData(0,0,mCanvas.width,mCanvas.height);
+   var width = mCanvas.width;
+   var MaxIncs = MAX_ITERATIONS;
+
+   //then loop through the pixels in the imageObject, and color them based on their number of escape iterations
+   //call exapand_M() to calculate how many iterations to escape
+   for(var i = 0; i < mImageData.data.length; i += 4) {
+      //first, get pixel coords
+      var X = (i/4) % width;
+      var Y = ((i/4) - X)/width;
+
+      //then get complex coords
+      var R = (cenR - currentRange/2) + (X/width)*currentRange;
+      var I = (cenI + currentRange/2) - (Y/width)*currentRange;
+
+      //pass complex coords to exapand_M
+      var incs_to_escape = exapand_M(R,I,MaxIncs);
+      //console.log("At Pixel (" + X + ", " + Y + ")" + " it took " + incs_to_escape + " to escape.")
+
+      //based on the outcome, paint the pixel black or white
+      if (incs_to_escape < 0) {
+         mImageData.data[i] = 0;
+         mImageData.data[i+1] = 0;
+         mImageData.data[i+2] = 0;
+         mImageData.data[i+3] = 255;
+      }
+      if (incs_to_escape == 1) {
+         mImageData.data[i] = 0;
+         mImageData.data[i+1] = 0;
+         mImageData.data[i+2] = 0;
+         mImageData.data[i+3] = 255;
+      }
+      if (incs_to_escape > 1 && incs_to_escape <= 20) {
+         mImageData.data[i] = 27;
+         mImageData.data[i+1] = 44;
+         mImageData.data[i+2] = 153;
+         mImageData.data[i+3] = 255;
+      }
+      if (incs_to_escape > 20 && incs_to_escape <= 40) {
+         mImageData.data[i] = 50;
+         mImageData.data[i+1] = 109;
+         mImageData.data[i+2] = 178;
+         mImageData.data[i+3] = 255;
+      }
+      if (incs_to_escape > 40 && incs_to_escape <= 60) {
+         mImageData.data[i] = 76;
+         mImageData.data[i+1] = 172;
+         mImageData.data[i+2] = 191;
+         mImageData.data[i+3] = 255;
+      }
+      if (incs_to_escape > 60 && incs_to_escape <= 80) {
+         mImageData.data[i] = 156;
+         mImageData.data[i+1] = 255;
+         mImageData.data[i+2] = 244;
+         mImageData.data[i+3] = 255;
+      }
+      if (incs_to_escape >= 80) {
+         mImageData.data[i] = 255;
+         mImageData.data[i+1] = 255;
+         mImageData.data[i+2] = 255;
+         mImageData.data[i+3] = 255;
+      }
+   }
+   mCtx.putImageData(mImageData,0,0)
+}
+function exapand_M(real,imaginary,MAX) {
+   //returns -1 if point never "escapes", otherwise return number of iterations to escape
+   var C = new ComplexNumber(real,imaginary);
+   var Z = C.squared();
+   var iterations = 1;
+   while (iterations < MAX) {
+      Zsquared = Z.squared();
+      Z = Zsquared.plus(C)
+      if (Z.magnitude() > 4) {
+           return iterations;
+      }
+      iterations += 1;
+   }
+   return -1;
 }
 // interal functions
 function eraseReplace() {
